@@ -1,15 +1,37 @@
+(deffunction pobierz_liczbe (?limit_low ?limit_high)
+   (bind ?liczba (read))
+   (while(or (not (integerp ?liczba))
+             (< ?liczba ?limit_low)
+             (> ?liczba ?limit_high)
+         )
+      (format t "%nPodales zla liczbe, sprobuj ponownie <%d,%d>:" ?limit_low ?limit_high)
+      (bind ?liczba (read))
+   )
+   (printout t crlf)
+   ?liczba
+)
+
+(deffunction warunek ()
+   (bind ?odp (readline))
+   (bind ?odp (lowcase ?odp))
+   (while(and (<> 0 (str-compare ?odp "tak")) (<> 0 (str-compare ?odp "nie")))
+      (printout t "<tak|nie>: ")
+      (bind ?odp (readline))
+   )
+   (printout t crlf)
+   ?odp
+)
 
 (deffunction pytaj (?pytanie $?allowed-values)
    (printout t ?pytanie)
    (bind ?answer (read))
-   (if (lexemep ?answer) 
-       then (bind ?answer (lowcase ?answer)))
+   (if (lexemep ?answer) then (bind ?answer (lowcase ?answer)))
    (while (not (member ?answer ?allowed-values)) do
       (printout t ?pytanie)
       (bind ?answer (read))
-      (if (lexemep ?answer) 
-          then (bind ?answer (lowcase ?answer))))
-		  	(printout t "(Dziekuje za skorzystanie z programu! Do widzenia)" crlf)
+	  
+    (if (lexemep ?answer) then (bind ?answer (lowcase ?answer))))
+	(printout t "(Dziekuje za skorzystanie z programu! Do widzenia)" crlf)
    ?answer)
    
 
@@ -46,5 +68,7 @@
 	(printout t "(Od ostatniego przegladu przejechales conajmniej 15000 km, wymagany serwis)" crlf))
 	
 )
+(defrule R2
+(
 
 
