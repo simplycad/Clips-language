@@ -144,4 +144,16 @@ else (bind ?test 1))
 (odpowiedz (read))
 )
 
+(defrule Q1
+(przebieg1 ?przebieg1)(przebieg2 ?przebieg2)
+=>
+(printout t "Czy silnik pracuje nierówno? <tak|nie>:" crlf)
+(bind ?silnik (warunek)) 
+(if (= 0 (str-compare "tak" ?paliwb)) then (printout t "memlel" crlf) else 
+(bind ?paliwb (warunek))
+(assert (silnik ?silnik))
+)
 
+(defrule Q2
+(silnik ?silnik)
+=>
