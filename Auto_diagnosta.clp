@@ -46,7 +46,7 @@
 ))
 
 
-(defrule start
+(defrule Test
    (initial-fact)
 =>
    (printout t ".-----------------------------------------." crlf)
@@ -60,18 +60,31 @@
    (printout t "|                                         |" crlf)
    (printout t "`-----------------------------------------'" crlf)
    
+   (printout t "Witaj. Czy chesz przeprowadzic test diagnostyczny?" <tak/nie> crlf)
+   (assert (start (warunek)))
+   )
    
-   (printout t "Podaj podaj przebieg samochodu z ostatniego serwisu" crlf)
+(defrule Olej
+  (start ?start)
+  (test (= 0 (str-compare ?start "nie")))
+=>
+(printout t "Czy przeprowadzic kontrole wymiany oleju?" <tak/nie> crlf)
+(assert (olej (warunek)))   
+
+)
+
+(defrule Olej_test
+(olej ?olej)
+(test (= 0 (str-compare ?olej "tak")))
+ =>
+ (printout t "Podaj podaj przebieg samochodu z ostatniego serwisu" crlf)
    (bind ?przebieg1 (read))
    (printout t "Podaj aktualny przebieg samochodu" crlf)
    (bind ?przebieg2 (read))
    (assert (przebieg1 ?przebieg1) (przebieg2 ?przebieg2))
-   
 )
 
-
-
-(defrule R1
+(defrule Olej_przebieg
 	(przebieg1 ?przebieg1)(przebieg2 ?przebieg2)
 => 
 	(if (< ?przebieg2 (+ ?przebieg1 15000))
@@ -83,7 +96,7 @@
 	
 )
 
-(defrule R2
+(defrule Olej_silnik
 (przebieg1 ?przebieg1)(przebieg2 ?przebieg2)
 =>
 
@@ -95,7 +108,7 @@
 
 )
 
-(defrule R3_wybor_oleju
+(defrule Olej_diesel
 (d ?diesel)
 =>
 	(printout t "Czy Twoj samochodu posiada filr czasek stalych <tak|nie>: ")
@@ -107,53 +120,64 @@
 )
 
 
-(defrule R4
+(defrule Olej_benzyna
 (b ?benzynka)
 =>
 (printout t "Czy Twoj samochod posiada filr GPF lub OPF" crlf)
-(bind ?dpf (warunek))
-	(if (= 0 (str-compare "tak" ?dpf)) then (bind ?filtr 0)
-	(printout t "(Zastosuj olej TOTAL QUARTZ INEO ECS 5W30)" crlf) else (printout t "(Zastosuj olej VALVOLINE MaxLife 10W4)" crlf)
+(bind ?gopf (warunek))
+	(if (= 0 (str-compare "tak" ?gopf)) then (bind ?filtr 0)
+	(printout t "(Zastosuj olej TOTAL QUARTZ INEO ECS 5W30)" crlf) else (printout t "(Zastosuj olej VALVOLINE MaxLife 10W40)" crlf)
 	(bind ?filtr 1)
 	)
 )
 
-(defrule R5
+(defrule Olej_gaz
 (g ?gaz)
 =>
+(printout t "Czy podstawowe paliwa to benzyna? <tak|nie>:" crlf)
+(bind ?paliwb (warunek)) 
+(assert (paliwb ?paliwb))
+
 (printout t "Czy Twoj samochod posiada filr GPF lub OPF <tak|nie>:" crlf)
-(bind ?dpf (warunek))
+(bind ?gpf (warunek))
 
-(if (= 0 (str-compare "tak" ?dpf)) then (bind ?test 0) 
-else (bind ?test 1))
 
-(printout t "Czy podstawowe paliwo to diesel? <tak|nie>:" crlf)
-(bind ?paliwd (warunek))
+(if (= 0 (str-compare "tak" ?gpf)) then (bind ?filtrbenz 1) 
+else (bind ?filtrbenz 0)) (assert (filtrbenz ?filtrbenz)) 
 
-(if (and (= 0 (str-compare "tak" ?paliwd))(= ?test 0)) then (printout t "(12121)" crlf) else
-(printout t "Czy podstawowe paliwo to benzyna? <tak|nie>:" crlf) )
-(bind ?paliwb (warunek))
-(if (= 0 (str-compare "tak" ?paliwb)) then (printout t "memlel" crlf) else 
-(bind ?paliwb (warunek))
-))
+)
 
-(defrule R6
+(defrule Olej_gazbenz
+(filtrbenz ?filtrbenz) (paliwb ?paliwb)
+=>
+(if (and (= 0 (str-compare "tak" ?paliwb))(= ?filtrbenz 1)) then (printout t "Czyli to olej benzyna" crlf))
+(if (and (= 0 (str-compare "nie" ?paliwb))(= ?filtrbenz 0)) then (printout t "qwert" crlf)
+(bind ?paliwd (warunek)) (assert (paliwd ?paliwd)))
+(if (and (= 0 (str-compare "nie" ?paliwb))(= ?filtrbenz 1)) then (printout t "Blad systemu - prosze wybrac ponownie" crlf)) 
+)
+
+
+(defrule Olej_gazdiesl
+(paliwd ?paliwd)
+=>
+(printout t "Czy posiada filtr DPF? <tak|nie>:" crlf) 
+(bind ?gazdiesl (warunek))
+(if (= 0 (str-compare "tak" ?gazdiesl)) then (printout t "memlel" crlf) else 
+(printout t "kukuryku" crlf))
+)
+
+
+(defrule Olej_zle
 (z ?zle)
 =>
 (printout t "(Podales zla odpowiedz - wybierz 1, 2 lub 3)" crlf)
 (odpowiedz (read))
 )
 
-(defrule Q1
-(przebieg1 ?przebieg1)(przebieg2 ?przebieg2)
-=>
-(printout t "Czy silnik pracuje nierówno? <tak|nie>:" crlf)
-(bind ?silnik (warunek)) 
-(if (= 0 (str-compare "tak" ?paliwb)) then (printout t "memlel" crlf) else 
-(bind ?paliwb (warunek))
-(assert (silnik ?silnik))
-)
 
-(defrule Q2
-(silnik ?silnik)
+(defrule Koniec
+(olej ?olej)
+  (test (= 0 (str-compare ?olej "nie")))
 =>
+  (printout t "Dziekuje za skorzystanie z programu.")
+)
