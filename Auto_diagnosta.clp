@@ -383,8 +383,8 @@ else (bind ?filtrbenz 0)) (assert (filtrbenz ?filtrbenz))
 
 
 (defrule Koniec
-(olej ?olej)(wtrysk ?wtrysk) (rozruch ?rozruch)
-  (test (or(= 0 (str-compare ?olej "nie")) (= 0 (str-compare ?wtrysk "nie")) (= 0 (str-compare ?rozruch "nie"))))
+(olej ?olej) (wtrysk ?wtrysk) (rozruch ?rozruch) (olej ?olej)
+  (test (or (= 0 (str-compare ?olej "nie")) (= 0 (str-compare ?wtrysk "nie")) (= 0 (str-compare ?rozruch "nie")) (= 0 (str-compare ?olej "nie"))))
 => 
   (printout t "Dziekuje za skorzystanie z programu.")
 )
